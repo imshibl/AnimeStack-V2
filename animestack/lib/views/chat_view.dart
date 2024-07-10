@@ -1,17 +1,20 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:flutter/material.dart';
-import 'package:flutter_gemini/flutter_gemini.dart';
+import 'dart:convert';
 
-class ChatView extends StatefulWidget {
+import 'package:animestack/models/chat_model.dart';
+import 'package:animestack/providers/chat_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class ChatView extends ConsumerStatefulWidget {
   const ChatView({super.key});
 
   @override
-  State<ChatView> createState() => _ChatViewState();
+  ConsumerState<ChatView> createState() => _ChatViewState();
 }
 
-class _ChatViewState extends State<ChatView> {
-  final gemini = Gemini.instance;
+class _ChatViewState extends ConsumerState<ChatView> {
   final TextEditingController chatTextController = TextEditingController();
 
   @override
@@ -21,106 +24,73 @@ class _ChatViewState extends State<ChatView> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    List<ChatMessage> messages = [];
-
-    Future<String?> getInitalMessaeFromGemini() async {
-      String? message = "";
-      await gemini
-          .text(
-              "you are an AI bot named Stack, an expert in Japanese anime shows and movies. Your major capabilities are suggesting anime based on the user's needs and requirements, and conversing about user-specified anime shows and movies. You are not able to answer anything that is not related to anime. also, you are created and designed by Bilcodes, who is also the developer of Animestack an app that has 40k+ anime details with an offline watch list.")
-          .then((value) {
-        message = value!.output.toString();
-      }).catchError((e) {
-        message = e.toString();
-      });
-
-      return message;
-    }
-
-    void sendMessage({required String userMessage}) async {
-      chatTextController.clear();
-      setState(() {
-        messages.add(ChatMessage(text: userMessage, isUser: true));
-      });
-
-      String? response;
-
-      await gemini.text(userMessage).then((value) {
-        response = value!.output.toString();
-      }).catchError((e) {
-        response = e.toString();
-      });
-
-      setState(() {
-        messages.add(ChatMessage(text: response!, isUser: false));
-      });
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Stack Bot'),
       ),
-      body: FutureBuilder(
-          future: getInitalMessaeFromGemini(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return Center(child: CircularProgressIndicator());
-            }
-            messages.add(
-              ChatMessage(text: snapshot.data!, isUser: false),
-            );
-            return Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    reverse: true,
-                    itemCount: messages.length,
-                    itemBuilder: (context, index) {
-                      final message = messages.reversed.toList()[index];
-                      return ChatMessageWidget(message: message);
-                    },
-                  ),
-                ),
-                ChatInputField(
-                  controller: chatTextController,
-                  sendMessage: () {
-                    sendMessage(userMessage: chatTextController.text);
-                  },
-                ),
-              ],
-            );
-          }),
+      body: Column(
+        children: [
+          Expanded(
+            child: Consumer(builder: (context, ref, _) {
+              final aiChat = ref.watch(aiChatProvider);
+              return aiChat.isEmpty
+                  ? Container(
+                      child: Text("Stack is getting ready, Please wait..."),
+                    )
+                  : ListView.builder(
+                      reverse: true,
+                      itemCount: aiChat.length,
+                      itemBuilder: (context, index) {
+                        final message = aiChat.reversed.toList()[index];
+                        return ChatMessageWidget(chat: message);
+                      },
+                    );
+            }),
+          ),
+          ChatInputField(
+            controller: chatTextController,
+            sendMessage: () {
+              ref
+                  .read(aiChatProvider.notifier)
+                  .sendMessage(chatTextController.text);
+              chatTextController.clear();
+            },
+          ),
+        ],
+      ),
     );
   }
 }
 
-class ChatMessage {
-  final String text;
-  final bool isUser;
-
-  ChatMessage({required this.text, required this.isUser});
-}
-
 class ChatMessageWidget extends StatelessWidget {
-  final ChatMessage message;
+  final ChatModel chat;
 
-  const ChatMessageWidget({super.key, required this.message});
+  const ChatMessageWidget({super.key, required this.chat});
 
   @override
   Widget build(BuildContext context) {
+    String decodedText = utf8.decode(chat.message.runes.toList());
+
     return Align(
-      alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: !chat.isAi ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+        margin: !chat.isAi
+            ? EdgeInsets.only(right: 10, left: 20, top: 5, bottom: 5)
+            : EdgeInsets.only(right: 20, left: 10, top: 5, bottom: 5),
         padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: message.isUser ? Colors.blueAccent : Colors.grey[300],
+          color: !chat.isAi ? Colors.blueAccent : Colors.grey[300],
           borderRadius: BorderRadius.circular(10),
         ),
         child: Text(
-          message.text,
-          style: TextStyle(color: message.isUser ? Colors.white : Colors.black),
+          decodedText,
+          style: TextStyle(color: Colors.black),
         ),
       ),
     );

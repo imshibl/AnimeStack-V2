@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:animestack/models/category_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -32,9 +30,4 @@ final categoryProvider = Provider<List<CategoryModel>>((ref) {
   );
 
   return [category1, category2, category3, category4, category5, category6];
-});
-
-final randomCategoryProvider = Provider<String>((ref) {
-  final categories = ref.watch(categoryProvider);
-  return categories[Random().nextInt(categories.length)].categoryName;
 });
