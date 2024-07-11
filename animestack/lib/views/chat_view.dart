@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'package:animestack/models/chat_model.dart';
 import 'package:animestack/providers/chat_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChatView extends ConsumerStatefulWidget {
@@ -94,8 +93,6 @@ class ChatMessageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String decodedText = utf8.decode(chat.message.runes.toList()).trimRight();
-
     return Align(
       alignment: !chat.isAi ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
@@ -104,7 +101,7 @@ class ChatMessageWidget extends StatelessWidget {
               : EdgeInsets.only(right: 60, left: 10, top: 5, bottom: 5),
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: !chat.isAi ? Colors.blueAccent : Colors.grey[300],
+            color: !chat.isAi ? Colors.blueAccent : Colors.green,
             borderRadius: BorderRadius.circular(10),
           ),
           child: buildRichText(context, chat.message)),
@@ -119,7 +116,10 @@ class ChatMessageWidget extends StatelessWidget {
 
     if (matches.isEmpty) {
       // If there are no matches, return a simple Text widget
-      return Text(decodedText);
+      return Text(
+        decodedText,
+        style: Theme.of(context).textTheme.bodyLarge,
+      );
     }
 
     int lastMatchEnd = 0;
@@ -165,6 +165,8 @@ class ChatInputField extends StatelessWidget {
           Expanded(
             child: TextField(
               controller: controller,
+              maxLines: null,
+              keyboardType: TextInputType.multiline,
               decoration: InputDecoration(
                 hintText: 'Type a message...',
                 border: OutlineInputBorder(

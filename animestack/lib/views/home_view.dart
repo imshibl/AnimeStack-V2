@@ -70,15 +70,16 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 ),
                 ListTile(
                   title: Text("Theme"),
-                  leading: Icon(Icons.light_mode),
+                  leading: ref.read(themeProvider) == ThemeMode.dark
+                      ? Icon(Icons.dark_mode)
+                      : Icon(Icons.light_mode),
                   trailing: Switch(
                     value: ref.read(themeProvider) == ThemeMode.dark,
                     onChanged: (value) {
                       ref.read(themeProvider.notifier).state =
                           value ? ThemeMode.dark : ThemeMode.light;
                       var themeBox = Hive.box('themeBox');
-                      themeBox.put(
-                          'theme', value ? ThemeMode.dark : ThemeMode.light);
+                      themeBox.put('theme', value ? "dark" : "light");
                     },
                   ),
                 ),
