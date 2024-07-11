@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:animestack/models/chat_model.dart';
 import 'package:animestack/providers/chat_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChatView extends ConsumerStatefulWidget {
@@ -32,7 +33,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Stack Bot'),
+        title: Text('Stack - Otaku friend'),
       ),
       body: Column(
         children: [
@@ -41,6 +42,19 @@ class _ChatViewState extends ConsumerState<ChatView> {
               final aiChat = ref.watch(aiChatProvider);
               return aiChat.isEmpty
                   ? Container(
+                      height: 50,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 2,
+                              offset:
+                                  Offset(0, 3), // changes position of shadow
+                            ),
+                          ]),
                       child: Text("Stack is getting ready, Please wait..."),
                     )
                   : ListView.builder(
@@ -75,7 +89,7 @@ class ChatMessageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String decodedText = utf8.decode(chat.message.runes.toList());
+    String decodedText = utf8.decode(chat.message.runes.toList()).trimRight();
 
     return Align(
       alignment: !chat.isAi ? Alignment.centerRight : Alignment.centerLeft,
@@ -94,6 +108,13 @@ class ChatMessageWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String makeBoldBetweenAsterisks(String text) {
+    final RegExp regex = RegExp(r'\*\*(.*?)\*\*');
+    return text.replaceAllMapped(regex, (Match match) {
+      return '<b>${match.group(1)}</b>';
+    });
   }
 }
 

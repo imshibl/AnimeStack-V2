@@ -12,7 +12,8 @@ chat_session = model.start_chat()
 
 @app.get("/")
 async def root():
-    return {"message": "Hey there, I'm Animestack. I'm here to help you with all things anime! 🤩"}
+    response = chat_session.send_message("Hey Stack")
+    return {"response": response.text}
 
 @app.post("/chat/")
 async def chat(chat_request: ChatRequest):

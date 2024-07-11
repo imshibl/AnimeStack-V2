@@ -13,16 +13,12 @@ class ChatProvider extends StateNotifier<List<ChatModel>> {
   final String baseUrl;
 
   Future<List<ChatModel>> loadAiChat() async {
-    try {
-      final request = await http.get(Uri.parse(baseUrl));
-      if (request.statusCode == 200) {
-        final data = jsonDecode(request.body);
+    final request = await http.get(Uri.parse(baseUrl));
+    if (request.statusCode == 200) {
+      final data = jsonDecode(request.body);
 
-        ChatModel chat = ChatModel(message: data["message"], isAi: true);
-        state = [...state, chat];
-      }
-    } catch (e) {
-      throw Exception(e);
+      ChatModel chat = ChatModel(message: data["response"], isAi: true);
+      state = [...state, chat];
     }
 
     return state;
@@ -31,32 +27,27 @@ class ChatProvider extends StateNotifier<List<ChatModel>> {
   void sendMessage(String message) async {
     ChatModel chat = ChatModel(message: message, isAi: false);
     state = [...state, chat];
+
     Map<String, dynamic> requestData = {
       'message': message,
     };
-    try {
-      String url = "${baseUrl}chat/";
-      print(url);
-      final request = await http.post(
-        Uri.parse(url),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(requestData),
-      );
-      if (request.statusCode == 200) {
-        final data = jsonDecode(request.body);
-        print(data);
-        ChatModel chat = ChatModel(message: data["response"], isAi: true);
-        print(chat.message);
-        state = [...state, chat];
-      } else {
-        print(request.statusCode);
-        print(request.body);
-      }
-    } catch (e) {
-      print(e);
+
+    String url = "${baseUrl}chat/";
+
+    final request = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(requestData),
+    );
+    if (request.statusCode == 200) {
+      final data = jsonDecode(request.body);
+
+      ChatModel chat = ChatModel(message: data["response"], isAi: true);
+
+      state = [...state, chat];
     }
   }
 }
@@ -65,4 +56,8 @@ final aiChatProvider =
     StateNotifierProvider<ChatProvider, List<ChatModel>>((ref) {
   final baseUrl = ref.read(aiChatBaseUrlProvider);
   return ChatProvider(baseUrl: baseUrl);
+});
+
+final chatLoadingProvider = StateProvider<bool>((ref) {
+  return false;
 });

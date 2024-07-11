@@ -4,7 +4,6 @@ import 'dart:math';
 
 import 'package:animestack/models/anime_model.dart';
 
-import 'package:animestack/providers/category_provider.dart';
 import 'package:animestack/providers/common_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -46,8 +45,6 @@ class AnimeProvider extends AsyncNotifier<List<AnimeModel>> {
     //   default:
     //     url = '$baseUrl?page[offset]=$pageNum';
     // }
-
-    print(url);
 
     final response = await http.get(Uri.parse(url));
 
