@@ -21,7 +21,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
   @override
   void initState() {
     super.initState();
-    ref.read(aiChatProvider.notifier).loadAiChat();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(aiChatProvider.notifier).loadAiChat();
+    });
   }
 
   @override
@@ -130,10 +132,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   children: [
                     Text(
                       "Random Suggestions",
-                      style: TextStyle(
-                          fontSize: 20,
-                          letterSpacing: 1.5,
-                          fontWeight: FontWeight.w700),
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
                     SizedBox(height: 10),
                     Consumer(builder: (context, ref, _) {
@@ -155,7 +154,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(10),
-                                          color: Colors.white,
                                           boxShadow: [
                                             BoxShadow(
                                               color:
@@ -188,16 +186,25 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                                   children: [
                                                     Text(
                                                       animeName,
-                                                      style: TextStyle(
-                                                          fontSize: 18,
-                                                          fontWeight:
-                                                              FontWeight.w700),
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .titleMedium,
                                                       maxLines: 3,
                                                       overflow:
                                                           TextOverflow.ellipsis,
                                                     ),
-                                                    Text("TV show"),
-                                                    Text("$rating/10"),
+                                                    Text(
+                                                      "TV show",
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyLarge,
+                                                    ),
+                                                    Text(
+                                                      "$rating/10",
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyMedium,
+                                                    ),
                                                   ],
                                                 ),
                                               ),

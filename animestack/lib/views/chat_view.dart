@@ -40,7 +40,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
           Expanded(
             child: Consumer(builder: (context, ref, _) {
               final aiChat = ref.watch(aiChatProvider);
-              return aiChat.isEmpty
+              return aiChat.messages.isEmpty
                   ? Container(
                       height: 50,
                       decoration: BoxDecoration(
@@ -57,13 +57,26 @@ class _ChatViewState extends ConsumerState<ChatView> {
                           ]),
                       child: Text("Stack is getting ready, Please wait..."),
                     )
-                  : ListView.builder(
-                      reverse: true,
-                      itemCount: aiChat.length,
-                      itemBuilder: (context, index) {
-                        final message = aiChat.reversed.toList()[index];
-                        return ChatMessageWidget(chat: message);
-                      },
+                  : Stack(
+                      children: [
+                        ListView.builder(
+                          reverse: true,
+                          itemCount: aiChat.messages.length,
+                          itemBuilder: (context, index) {
+                            final message =
+                                aiChat.messages.reversed.toList()[index];
+                            return ChatMessageWidget(
+                              chat: message,
+                            );
+                          },
+                        ),
+                        if (aiChat.isLoading)
+                          Positioned(
+                            left: 16,
+                            bottom: 10,
+                            child: TypingIndicator(),
+                          ),
+                      ],
                     );
             }),
           ),
@@ -95,8 +108,8 @@ class ChatMessageWidget extends StatelessWidget {
       alignment: !chat.isAi ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: !chat.isAi
-            ? EdgeInsets.only(right: 10, left: 20, top: 5, bottom: 5)
-            : EdgeInsets.only(right: 20, left: 10, top: 5, bottom: 5),
+            ? EdgeInsets.only(right: 10, left: 60, top: 5, bottom: 5)
+            : EdgeInsets.only(right: 60, left: 10, top: 5, bottom: 5),
         padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: !chat.isAi ? Colors.blueAccent : Colors.grey[300],
@@ -148,6 +161,64 @@ class ChatInputField extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class TypingIndicator extends StatefulWidget {
+  const TypingIndicator({super.key});
+
+  @override
+  State<TypingIndicator> createState() => _TypingIndicatorState();
+}
+
+class _TypingIndicatorState extends State<TypingIndicator>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Container(
+          padding: EdgeInsets.all(8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: List.generate(3, (index) {
+              return Padding(
+                padding: EdgeInsets.only(right: 4),
+                child: Opacity(
+                  opacity: (index + 1) / 3 <= _controller.value ? 1.0 : 0.2,
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ),
+        );
+      },
     );
   }
 }

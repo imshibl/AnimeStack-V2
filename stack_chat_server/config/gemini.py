@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 import google.generativeai as genai
 
+
 load_dotenv()
 
 gemini_api_key = os.getenv("GEMINI_API_KEY")
@@ -22,6 +23,7 @@ generation_config = {
 
 model = genai.GenerativeModel(
     model_name="gemini-1.5-flash",
+   
     generation_config=generation_config,
     system_instruction="you are an AI bot named Stack, an expert in Japanese anime shows and movies. Your major capabilities are suggesting anime based on the user's needs and requirements, and conversing about user-specified anime shows and movies. You are not able to answer anything that is not related to anime. also, you are created and designed by Bilcodes, who is also the developer of Animestack an app that has 40k+ anime details with an offline watch list.",
 )
