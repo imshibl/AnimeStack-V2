@@ -5,10 +5,12 @@ import 'package:animestack/config/routes.dart';
 import 'package:animestack/providers/anime_provider.dart';
 import 'package:animestack/providers/category_provider.dart';
 import 'package:animestack/providers/chat_provider.dart';
+import 'package:animestack/providers/theme_provider.dart';
 
 import 'package:animestack/utils/helpers/convert_average_rating.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class HomeView extends ConsumerStatefulWidget {
   const HomeView({super.key});
@@ -52,7 +54,42 @@ class _HomeViewState extends ConsumerState<HomeView> {
           ),
         ],
       ),
-      drawer: Drawer(),
+      drawer: Drawer(
+          child: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              children: [
+                ListTile(
+                  title: Text("Home"),
+                  leading: Icon(Icons.home),
+                ),
+                ListTile(
+                  title: Text("Watchlist"),
+                  leading: Icon(Icons.person),
+                ),
+                ListTile(
+                  title: Text("Theme"),
+                  leading: Icon(Icons.light_mode),
+                  trailing: Switch(
+                    value: ref.read(themeProvider) == ThemeMode.dark,
+                    onChanged: (value) {
+                      ref.read(themeProvider.notifier).state =
+                          value ? ThemeMode.dark : ThemeMode.light;
+                      var themeBox = Hive.box('themeBox');
+                      themeBox.put(
+                          'theme', value ? ThemeMode.dark : ThemeMode.light);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            child: Text("AnimeStack"),
+          ),
+        ],
+      )),
       body: RefreshIndicator(
         onRefresh: () {
           ref.refresh(animeProvider);
@@ -152,18 +189,11 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                       margin: EdgeInsets.only(bottom: 10),
                                       padding: EdgeInsets.all(10),
                                       decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color:
-                                                  Colors.black.withOpacity(0.5),
-                                              spreadRadius: 2,
-                                              blurRadius: 5,
-                                              offset: Offset(0,
-                                                  3), // changes position of shadow
-                                            ),
-                                          ]),
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                          color: Colors.black38,
+                                        ),
+                                      ),
                                       child: Column(
                                         children: [
                                           Row(

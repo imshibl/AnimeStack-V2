@@ -40,44 +40,36 @@ class _ChatViewState extends ConsumerState<ChatView> {
           Expanded(
             child: Consumer(builder: (context, ref, _) {
               final aiChat = ref.watch(aiChatProvider);
-              return aiChat.messages.isEmpty
-                  ? Container(
-                      height: 50,
+              return Stack(
+                children: [
+                  ListView.builder(
+                    reverse: true,
+                    itemCount: aiChat.messages.length,
+                    itemBuilder: (context, index) {
+                      final message = aiChat.messages.reversed.toList()[index];
+                      return ChatMessageWidget(
+                        chat: message,
+                      );
+                    },
+                  ),
+                  if (aiChat.messages.isEmpty)
+                    Container(
                       decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 2,
-                              blurRadius: 2,
-                              offset:
-                                  Offset(0, 3), // changes position of shadow
-                            ),
-                          ]),
-                      child: Text("Stack is getting ready, Please wait..."),
-                    )
-                  : Stack(
-                      children: [
-                        ListView.builder(
-                          reverse: true,
-                          itemCount: aiChat.messages.length,
-                          itemBuilder: (context, index) {
-                            final message =
-                                aiChat.messages.reversed.toList()[index];
-                            return ChatMessageWidget(
-                              chat: message,
-                            );
-                          },
-                        ),
-                        if (aiChat.isLoading)
-                          Positioned(
-                            left: 16,
-                            bottom: 10,
-                            child: TypingIndicator(),
-                          ),
-                      ],
-                    );
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        "Stack is getting ready, Please wait...",
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                    ),
+                  if (aiChat.isLoading && aiChat.messages.isNotEmpty)
+                    Positioned(
+                      left: 16,
+                      bottom: 10,
+                      child: TypingIndicator(),
+                    ),
+                ],
+              );
             }),
           ),
           ChatInputField(
@@ -107,27 +99,53 @@ class ChatMessageWidget extends StatelessWidget {
     return Align(
       alignment: !chat.isAi ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        margin: !chat.isAi
-            ? EdgeInsets.only(right: 10, left: 60, top: 5, bottom: 5)
-            : EdgeInsets.only(right: 60, left: 10, top: 5, bottom: 5),
-        padding: EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: !chat.isAi ? Colors.blueAccent : Colors.grey[300],
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Text(
-          decodedText,
-          style: TextStyle(color: Colors.black),
-        ),
-      ),
+          margin: !chat.isAi
+              ? EdgeInsets.only(right: 10, left: 60, top: 5, bottom: 5)
+              : EdgeInsets.only(right: 60, left: 10, top: 5, bottom: 5),
+          padding: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: !chat.isAi ? Colors.blueAccent : Colors.grey[300],
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: buildRichText(context, chat.message)),
     );
   }
 
-  String makeBoldBetweenAsterisks(String text) {
-    final RegExp regex = RegExp(r'\*\*(.*?)\*\*');
-    return text.replaceAllMapped(regex, (Match match) {
-      return '<b>${match.group(1)}</b>';
-    });
+  Widget buildRichText(BuildContext context, String message) {
+    String decodedText = utf8.decode(message.runes.toList()).trimRight();
+    List<TextSpan> spans = [];
+    RegExp exp = RegExp(r'\*\*(.*?)\*\*');
+    Iterable<Match> matches = exp.allMatches(decodedText);
+
+    if (matches.isEmpty) {
+      // If there are no matches, return a simple Text widget
+      return Text(decodedText);
+    }
+
+    int lastMatchEnd = 0;
+
+    for (Match match in matches) {
+      if (match.start > lastMatchEnd) {
+        spans.add(
+            TextSpan(text: decodedText.substring(lastMatchEnd, match.start)));
+      }
+      spans.add(TextSpan(
+        text: match.group(1),
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ));
+      lastMatchEnd = match.end;
+    }
+
+    if (lastMatchEnd < decodedText.length) {
+      spans.add(TextSpan(text: decodedText.substring(lastMatchEnd)));
+    }
+
+    return RichText(
+      text: TextSpan(
+        style: Theme.of(context).textTheme.bodyLarge,
+        children: spans,
+      ),
+    );
   }
 }
 
