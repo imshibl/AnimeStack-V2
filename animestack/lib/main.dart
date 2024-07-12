@@ -1,14 +1,14 @@
 import 'package:animestack/config/routes.dart';
 import 'package:animestack/config/theme.dart';
 import 'package:animestack/providers/theme_provider.dart';
-// import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 Future<void> main() async {
-  // await dotenv.load(fileName: ".env");
+  WidgetsFlutterBinding.ensureInitialized();
+
   await Hive.initFlutter();
 
   await Hive.openBox('themeBox');

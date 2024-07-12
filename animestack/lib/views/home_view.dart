@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:animestack/config/routes.dart';
+import 'package:animestack/models/category_model.dart';
 
 import 'package:animestack/providers/anime_provider.dart';
 import 'package:animestack/providers/category_provider.dart';
@@ -9,7 +10,10 @@ import 'package:animestack/providers/helper_providers.dart';
 import 'package:animestack/providers/theme_provider.dart';
 
 import 'package:animestack/utils/helpers/convert_average_rating.dart';
+import 'package:animestack/utils/helpers/package_info.dart';
 import 'package:animestack/utils/snack_bar.dart';
+import 'package:animestack/widgets/category_container.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -23,10 +27,11 @@ class HomeView extends ConsumerStatefulWidget {
 
 class _HomeViewState extends ConsumerState<HomeView> {
   final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       ref.read(aiChatProvider.notifier).loadAiChat();
     });
 
@@ -84,11 +89,11 @@ class _HomeViewState extends ConsumerState<HomeView> {
               children: [
                 ListTile(
                   title: Text("Home"),
-                  leading: Icon(Icons.home),
+                  leading: Icon(Icons.home_outlined),
                 ),
                 ListTile(
                   title: Text("Watchlist"),
-                  leading: Icon(Icons.person),
+                  leading: Icon(Icons.bookmark_outline),
                 ),
                 ListTile(
                   title: Text("Theme"),
@@ -108,9 +113,14 @@ class _HomeViewState extends ConsumerState<HomeView> {
               ],
             ),
           ),
-          Container(
-            child: Text("AnimeStack"),
-          ),
+          FutureBuilder(
+              future: getVersionCode(),
+              builder: (context, data) {
+                if (data.hasData) {
+                  return Text(data.data.toString());
+                }
+                return SizedBox();
+              }),
         ],
       )),
       body: RefreshIndicator(
@@ -136,49 +146,13 @@ class _HomeViewState extends ConsumerState<HomeView> {
                           crossAxisSpacing: 10,
                           childAspectRatio: 2),
                       itemBuilder: (context, index) {
-                        String categoryName = animeList[index].categoryName;
+                        String categoryName =
+                            animeList[index].categoryName.displayName;
                         String categoryImage = animeList[index].categoryImage;
-                        return Container(
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: NetworkImage(
-                                  categoryImage,
-                                ),
-                                fit: BoxFit.cover,
-                              ),
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.5),
-                                  spreadRadius: 2,
-                                  blurRadius: 5,
-                                  offset: Offset(
-                                      0, 3), // changes position of shadow
-                                ),
-                              ]),
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(
-                                      0.5), // Adjust opacity to your preference
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                              Text(
-                                categoryName,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                    letterSpacing: 1.5),
-                              ),
-                            ],
-                          ),
-                        );
+
+                        return CategoryContainer(
+                            categoryImage: categoryImage,
+                            categoryName: categoryName);
                       },
                     );
                   });
@@ -213,7 +187,10 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                   final status = data[index].status;
                                   final popularityRank =
                                       data[index].popularityRank;
-                                  final ratingRank = data[index].ratingRank;
+                                  final ratingRank =
+                                      data[index].ratingRank != "null"
+                                          ? data[index].ratingRank
+                                          : "N/A";
                                   return Column(
                                     children: [
                                       Container(
