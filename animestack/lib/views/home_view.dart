@@ -182,8 +182,14 @@ class _HomeViewState extends ConsumerState<HomeView> {
                       String categoryImage = categoryList[index].categoryImage;
 
                       return CategoryContainer(
-                          categoryImage: categoryImage,
-                          categoryName: categoryName);
+                        categoryImage: categoryImage,
+                        categoryName: categoryName,
+                        onTap: () {
+                          ref.read(selectedCategoryProvider.notifier).state =
+                              categoryList[index].categoryName;
+                          Navigator.pushNamed(context, AppRoutes.animelist);
+                        },
+                      );
                     },
                   );
                 }),
@@ -236,15 +242,17 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                           favCount: favCount),
                                       if (index == data.length - 1)
                                         GestureDetector(
-                                            onTap: () {
-                                              ref
-                                                  .read(randomAnimeProvider
-                                                      .notifier)
-                                                  .showMoreAnime();
-                                            },
-                                            child: Container(
-                                                margin: EdgeInsets.all(5),
-                                                child: Text("Show more"))),
+                                          onTap: () {
+                                            ref
+                                                .read(randomAnimeProvider
+                                                    .notifier)
+                                                .showMoreAnime();
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.all(5),
+                                            child: Text("Show more"),
+                                          ),
+                                        ),
                                     ],
                                   );
                                 });

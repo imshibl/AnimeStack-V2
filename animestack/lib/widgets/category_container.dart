@@ -6,43 +6,48 @@ class CategoryContainer extends StatelessWidget {
     super.key,
     required this.categoryImage,
     required this.categoryName,
+    required this.onTap,
   });
 
   final String categoryImage;
   final String categoryName;
+  final Function() onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      fit: StackFit.expand,
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: CachedNetworkImage(
-            imageUrl: categoryImage,
-            fit: BoxFit.cover,
-            errorWidget: (context, url, error) => const Icon(Icons.error),
-          ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.black
-                .withOpacity(0.5), // Adjust opacity to your preference
+    return GestureDetector(
+      onTap: onTap,
+      child: Stack(
+        alignment: Alignment.center,
+        fit: StackFit.expand,
+        children: [
+          ClipRRect(
             borderRadius: BorderRadius.circular(10),
+            child: CachedNetworkImage(
+              imageUrl: categoryImage,
+              fit: BoxFit.cover,
+              errorWidget: (context, url, error) => const Icon(Icons.error),
+            ),
           ),
-        ),
-        Center(
-          child: Text(
-            categoryName,
-            style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 1.5),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.black
+                  .withOpacity(0.5), // Adjust opacity to your preference
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
-        ),
-      ],
+          Center(
+            child: Text(
+              categoryName,
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 1.5),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

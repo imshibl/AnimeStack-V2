@@ -1,3 +1,4 @@
+import 'package:animestack/views/anime_collection_view.dart';
 import 'package:animestack/views/chat_view.dart';
 import 'package:animestack/views/home_view.dart';
 import 'package:animestack/views/search_view.dart';
@@ -11,6 +12,7 @@ class AppRoutes {
   static const String chat = '/chat';
   static const String watchlist = '/watchlist';
   static const String search = '/search';
+  static const String animelist = '/animelist';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -24,6 +26,9 @@ class AppRoutes {
         return MaterialPageRoute(builder: (context) => const WatchlistView());
       case search:
         return MaterialPageRoute(builder: (context) => const SearchView());
+      case animelist:
+        return MaterialPageRoute(
+            builder: (context) => const AnimeCollectionView());
       default:
         return MaterialPageRoute(builder: (context) => const SplashView());
     }

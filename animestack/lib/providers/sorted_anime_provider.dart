@@ -10,11 +10,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
 class SortedAnimeProvider extends AsyncNotifier<List<AnimeModel>> {
-  int _currentPage = 1;
+  int _currentPage = 0;
 
   @override
   FutureOr<List<AnimeModel>> build() {
-    final CategoryType? selectedCategory = ref.read(selectedCategoryProvider);
+    _currentPage = 0;
+    final CategoryType? selectedCategory = ref.watch(selectedCategoryProvider);
     return getAnimeList(pageNum: _currentPage, category: selectedCategory);
   }
 
@@ -42,7 +43,7 @@ class SortedAnimeProvider extends AsyncNotifier<List<AnimeModel>> {
   Future<void> showMoreAnime({required CategoryType? category}) async {
     List<AnimeModel> animeList = [];
 
-    _currentPage++;
+    _currentPage = _currentPage + 10;
     String url = getUrl(
         baseUrl: ref.read(baseUrlProvider),
         category: category,
