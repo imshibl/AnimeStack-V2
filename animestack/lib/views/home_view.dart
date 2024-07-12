@@ -3,7 +3,7 @@
 import 'package:animestack/config/routes.dart';
 import 'package:animestack/models/category_model.dart';
 
-import 'package:animestack/providers/anime_provider.dart';
+import 'package:animestack/providers/random_anime_provider.dart';
 import 'package:animestack/providers/category_provider.dart';
 import 'package:animestack/providers/chat_provider.dart';
 import 'package:animestack/providers/helper_providers.dart';
@@ -37,9 +37,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
     _scrollController.addListener(() {
       if (_scrollController.offset >= 400) {
-        ref.read(showBackToTopProvider.notifier).state = true;
+        ref.read(fabVisibilityProvider.notifier).state = true;
       } else {
-        ref.read(showBackToTopProvider.notifier).state = false;
+        ref.read(fabVisibilityProvider.notifier).state = false;
       }
     });
   }
@@ -157,7 +157,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
       )),
       body: RefreshIndicator(
         onRefresh: () {
-          return ref.refresh(animeProvider.future);
+          return ref.refresh(randomAnimeProvider.future);
         },
         child: SingleChildScrollView(
           controller: _scrollController,
@@ -166,10 +166,10 @@ class _HomeViewState extends ConsumerState<HomeView> {
               Container(
                 margin: EdgeInsets.all(10),
                 child: Consumer(builder: (context, ref, _) {
-                  final animeList = ref.watch(categoryProvider);
+                  final categoryList = ref.watch(categoryProvider);
                   return GridView.builder(
                     physics: NeverScrollableScrollPhysics(),
-                    itemCount: animeList.length,
+                    itemCount: categoryList.length,
                     shrinkWrap: true,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
@@ -178,8 +178,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
                         childAspectRatio: 2),
                     itemBuilder: (context, index) {
                       String categoryName =
-                          animeList[index].categoryName.displayName;
-                      String categoryImage = animeList[index].categoryImage;
+                          categoryList[index].categoryName.displayName;
+                      String categoryImage = categoryList[index].categoryImage;
 
                       return CategoryContainer(
                           categoryImage: categoryImage,
@@ -200,8 +200,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     ),
                     SizedBox(height: 10),
                     Consumer(builder: (context, ref, _) {
-                      final anime = ref.watch(animeProvider);
-                      return anime.when(
+                      final randomAnimes = ref.watch(randomAnimeProvider);
+                      return randomAnimes.when(
                           data: (data) {
                             return ListView.builder(
                                 physics: NeverScrollableScrollPhysics(),
@@ -238,7 +238,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                         GestureDetector(
                                             onTap: () {
                                               ref
-                                                  .read(animeProvider.notifier)
+                                                  .read(randomAnimeProvider
+                                                      .notifier)
                                                   .showMoreAnime();
                                             },
                                             child: Container(
@@ -250,8 +251,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
                           },
                           error: (error, stackTrace) =>
                               Center(child: Text(error.toString())),
-                          loading: () =>
-                              Center(child: CircularProgressIndicator()));
+                          loading: () => Center(
+                              child: CircularProgressIndicator.adaptive()));
                     }),
                   ],
                 ),
@@ -261,8 +262,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
         ),
       ),
       floatingActionButton: Consumer(builder: (context, ref, _) {
-        final showBackToTop = ref.watch(showBackToTopProvider);
-        return showBackToTop
+        final isFabVisible = ref.watch(fabVisibilityProvider);
+        return isFabVisible
             ? FloatingActionButton(
                 onPressed: () {
                   _scrollToTop();

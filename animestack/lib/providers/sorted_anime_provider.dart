@@ -1,27 +1,31 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:animestack/models/anime_model.dart';
+import 'package:animestack/models/category_model.dart';
+import 'package:animestack/providers/category_provider.dart';
 
 import 'package:animestack/providers/helper_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
-class AnimeProvider extends AsyncNotifier<List<AnimeModel>> {
+class SortedAnimeProvider extends AsyncNotifier<List<AnimeModel>> {
   int _currentPage = 1;
+
   @override
   FutureOr<List<AnimeModel>> build() {
-    int randomPage = Random().nextInt(1000) + 1;
-    _currentPage = randomPage;
-    return getAnimeList(pageNum: _currentPage);
+    final CategoryType? selectedCategory = ref.read(selectedCategoryProvider);
+    return getAnimeList(pageNum: _currentPage, category: selectedCategory);
   }
 
-  Future<List<AnimeModel>> getAnimeList({required int pageNum}) async {
+  Future<List<AnimeModel>> getAnimeList(
+      {required int pageNum, required CategoryType? category}) async {
     List<AnimeModel> animeList = [];
 
-    String baseUrl = ref.read(baseUrlProvider);
-    String url = "$baseUrl?page[offset]=$pageNum";
+    String url = getUrl(
+        baseUrl: ref.read(baseUrlProvider),
+        category: category,
+        pageNum: pageNum);
 
     final response = await http.get(Uri.parse(url));
 
@@ -35,13 +39,14 @@ class AnimeProvider extends AsyncNotifier<List<AnimeModel>> {
     return animeList;
   }
 
-  Future<void> showMoreAnime() async {
+  Future<void> showMoreAnime({required CategoryType? category}) async {
     List<AnimeModel> animeList = [];
 
-    String baseUrl = ref.read(baseUrlProvider);
-    int randomPage = Random().nextInt(1000) + _currentPage;
-    _currentPage = randomPage;
-    String url = "$baseUrl?page[offset]=$_currentPage";
+    _currentPage++;
+    String url = getUrl(
+        baseUrl: ref.read(baseUrlProvider),
+        category: category,
+        pageNum: _currentPage);
 
     final response = await http.get(Uri.parse(url));
 
@@ -56,27 +61,29 @@ class AnimeProvider extends AsyncNotifier<List<AnimeModel>> {
   }
 
   String getUrl(
-      {required String baseUrl, required String category, int? pageNum}) {
+      {required String baseUrl,
+      required CategoryType? category,
+      required int pageNum}) {
     String url = baseUrl;
 
     switch (category) {
-      case 'Show All':
+      case CategoryType.showAll:
         url = '$baseUrl?page[offset]=$pageNum';
         break;
-      case 'Top Rated':
+      case CategoryType.topRated:
         url = '$baseUrl?sort=ratingRank&page[offset]=$pageNum';
         break;
-      case 'Popular':
+      case CategoryType.popular:
         url = '$baseUrl?sort=popularityRank&page[offset]=$pageNum';
         break;
-      case 'Favorites':
+      case CategoryType.favorites:
         url = '$baseUrl?sort=-favoritesCount&page[offset]=$pageNum';
         break;
-      case 'Movies':
+      case CategoryType.movies:
         url =
             '$baseUrl?filter[subtype]=movie&sort=-userCount&page[offset]=$pageNum';
         break;
-      case 'Most Watched':
+      case CategoryType.mostWatched:
         url =
             '$baseUrl?filter[subtype]=tv&sort=-userCount&page[offset]=$pageNum';
         break;
@@ -88,7 +95,7 @@ class AnimeProvider extends AsyncNotifier<List<AnimeModel>> {
   }
 }
 
-final animeProvider =
-    AsyncNotifierProvider<AnimeProvider, List<AnimeModel>>(() {
-  return AnimeProvider();
+final sortedAnimeProvider =
+    AsyncNotifierProvider<SortedAnimeProvider, List<AnimeModel>>(() {
+  return SortedAnimeProvider();
 });

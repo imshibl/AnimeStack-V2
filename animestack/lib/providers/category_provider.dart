@@ -44,3 +44,5 @@ final categoryProvider = Provider<List<CategoryModel>>((ref) {
 
   return [category1, category2, category3, category4, category5, category6];
 });
+
+final selectedCategoryProvider = StateProvider<CategoryType?>((ref) => null);
