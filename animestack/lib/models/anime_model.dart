@@ -5,6 +5,8 @@ class AnimeModel {
   final String rating;
   final String subType;
   final String ageRating;
+  final String ratingRank;
+  final String popularityRank;
   final String status;
   final String? coverImage;
 
@@ -15,6 +17,8 @@ class AnimeModel {
     required this.rating,
     required this.subType,
     required this.ageRating,
+    required this.ratingRank,
+    required this.popularityRank,
     required this.status,
     this.coverImage,
   });
@@ -29,6 +33,8 @@ class AnimeModel {
       rating: attributes['averageRating'] ?? '0',
       subType: attributes['subtype'] ?? '',
       ageRating: attributes['ageRating'] ?? '',
+      ratingRank: attributes['ratingRank'].toString(),
+      popularityRank: attributes['popularityRank'].toString(),
       status: attributes['status'] ?? '',
       coverImage: attributes['coverImage']?['original'],
     );

@@ -1,0 +1,2 @@
+ranking icon: <a href="https://www.flaticon.com/free-icons/rosette" title="rosette icons">Rosette icons created by dwicon - Flaticon</a>
+popularity icon: <a href="https://www.flaticon.com/free-icons/trend" title="trend icons">Trend icons created by Freepik - Flaticon</a>

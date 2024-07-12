@@ -9,6 +9,7 @@ import 'package:animestack/providers/helper_providers.dart';
 import 'package:animestack/providers/theme_provider.dart';
 
 import 'package:animestack/utils/helpers/convert_average_rating.dart';
+import 'package:animestack/utils/snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -209,6 +210,10 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                       convertAverageRating(data[index].rating);
                                   final type = data[index].subType;
                                   final ageRating = data[index].ageRating;
+                                  final status = data[index].status;
+                                  final popularityRank =
+                                      data[index].popularityRank;
+                                  final ratingRank = data[index].ratingRank;
                                   return Column(
                                     children: [
                                       Container(
@@ -227,13 +232,48 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                  child: Image.network(
-                                                    posterImage,
-                                                    height: 150,
-                                                  ),
+                                                Stack(
+                                                  children: [
+                                                    ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                      child: Image.network(
+                                                        posterImage,
+                                                        height: 150,
+                                                      ),
+                                                    ),
+                                                    Container(
+                                                      margin: EdgeInsets.all(5),
+                                                      padding:
+                                                          EdgeInsets.all(5),
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                        color: Colors.black
+                                                            .withOpacity(0.7),
+                                                      ),
+                                                      child: Row(
+                                                        children: [
+                                                          Image.asset(
+                                                            "assets/icons/ranking.png",
+                                                            width: 20,
+                                                          ),
+                                                          Text(
+                                                            ratingRank,
+                                                            style: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .titleSmall!
+                                                                .copyWith(
+                                                                    color: Colors
+                                                                        .white),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                                 SizedBox(width: 10),
                                                 Flexible(
@@ -289,6 +329,43 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                                           ),
                                                         ],
                                                       ),
+                                                      Text(
+                                                        "Status: $status",
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .bodyMedium,
+                                                      ),
+                                                      SizedBox(
+                                                        height: 5,
+                                                      ),
+                                                      GestureDetector(
+                                                        onTap: () {
+                                                          showSnackBar(
+                                                              context: context,
+                                                              message:
+                                                                  "Popularity Rank: $popularityRank");
+                                                        },
+                                                        child: Row(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            Image.asset(
+                                                              "assets/icons/trending.png",
+                                                              width: 25,
+                                                            ),
+                                                            Text(
+                                                              popularityRank,
+                                                              style: Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .bodyMedium,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )
                                                     ],
                                                   ),
                                                 ),

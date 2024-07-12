@@ -20,12 +20,20 @@ class _SplashViewState extends State<SplashView> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text("ANIME STACK"),
+          Center(
+            child: Text(
+              "ANIME STACK",
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge!
+                  .copyWith(letterSpacing: 2),
+            ),
+          ),
         ],
       ),
     );
