@@ -76,7 +76,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
             icon: Icon(Icons.chat_bubble_outline),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, AppRoutes.watchlist);
+            },
             icon: Icon(Icons.favorite_border_outlined),
           ),
         ],
@@ -102,6 +104,10 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 ListTile(
                   title: Text("Watchlist"),
                   leading: Icon(Icons.favorite_outline),
+                  onTap: () {
+                    globalKey.currentState!.closeDrawer();
+                    Navigator.pushNamed(context, AppRoutes.watchlist);
+                  },
                 ),
                 ListTile(
                   title: Text("Theme"),

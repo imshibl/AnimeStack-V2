@@ -15,6 +15,7 @@ class GridAnimeContainer extends StatelessWidget {
   final String popularityRank;
   final String ratingRank;
   final String favCount;
+  final Function(BuildContext) onMenuIconPressed;
 
   const GridAnimeContainer({
     super.key,
@@ -27,6 +28,7 @@ class GridAnimeContainer extends StatelessWidget {
     required this.popularityRank,
     required this.ratingRank,
     required this.favCount,
+    required this.onMenuIconPressed,
   });
 
   @override
@@ -56,7 +58,9 @@ class GridAnimeContainer extends StatelessWidget {
                 children: [
                   RatingRankBadge(ratingRank: ratingRank),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      onMenuIconPressed(context);
+                    },
                     icon: Icon(
                       Icons.more_vert,
                       color: Colors.white,
