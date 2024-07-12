@@ -11,7 +11,9 @@ Future<void> main() async {
 
   await Hive.initFlutter();
 
-  await Hive.openBox('themeBox');
+  await Hive.openBox('themeBox'); //light/dark
+
+  await Hive.openBox('viewTypeBox'); //listview/gridview
 
   runApp(const ProviderScope(child: MyApp()));
 }

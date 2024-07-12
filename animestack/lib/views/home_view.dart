@@ -11,7 +11,7 @@ import 'package:animestack/providers/theme_provider.dart';
 
 import 'package:animestack/utils/helpers/convert_average_rating.dart';
 import 'package:animestack/utils/helpers/package_info.dart';
-import 'package:animestack/widgets/anime_container.dart';
+import 'package:animestack/widgets/list_anime_container.dart';
 import 'package:animestack/widgets/category_container.dart';
 
 import 'package:flutter/material.dart';
@@ -93,7 +93,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   onTap: () => globalKey.currentState!.closeDrawer(),
                 ),
                 ListTile(
-                    title: Text("Stack - Otaku friend"),
+                    title: Text("Stack - AI Otaku friend"),
                     leading: Icon(Icons.chat_bubble_outline),
                     onTap: () {
                       globalKey.currentState!.closeDrawer();
@@ -230,7 +230,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                   final favCount = data[index].favoritesCount;
                                   return Column(
                                     children: [
-                                      AnimeContainer(
+                                      ListAnimeContainer(
                                           posterImage: posterImage,
                                           ratingRank: ratingRank,
                                           animeName: animeName,

@@ -1,9 +1,10 @@
 import 'package:animestack/utils/snack_bar.dart';
+import 'package:animestack/widgets/anime_container_widgets.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-class AnimeContainer extends StatelessWidget {
-  const AnimeContainer({
+class ListAnimeContainer extends StatelessWidget {
+  const ListAnimeContainer({
     super.key,
     required this.posterImage,
     required this.ratingRank,
@@ -33,9 +34,7 @@ class AnimeContainer extends StatelessWidget {
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: Colors.black38,
-        ),
+        border: Border.all(color: Colors.grey.shade300),
       ),
       child: Column(
         children: [
@@ -60,29 +59,7 @@ class AnimeContainer extends StatelessWidget {
                           context: context,
                           message: "Rating Rank: $ratingRank");
                     },
-                    child: Container(
-                      margin: const EdgeInsets.all(5),
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.black.withOpacity(0.7),
-                      ),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            "assets/icons/ranking.png",
-                            width: 20,
-                          ),
-                          Text(
-                            ratingRank,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall!
-                                .copyWith(color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
+                    child: RatingRankBadge(ratingRank: ratingRank),
                   ),
                 ],
               ),
@@ -140,19 +117,8 @@ class AnimeContainer extends StatelessWidget {
                                 context: context,
                                 message: "Popularity Rank: $popularityRank");
                           },
-                          child: Row(
-                            children: [
-                              Image.asset(
-                                "assets/icons/trending.png",
-                                width: 28,
-                              ),
-                              const SizedBox(width: 5),
-                              Text(
-                                popularityRank,
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                            ],
-                          ),
+                          child: CountBadge(
+                              imgIcon: "trending.png", count: popularityRank),
                         ),
                         const SizedBox(width: 10),
                         GestureDetector(
@@ -161,19 +127,8 @@ class AnimeContainer extends StatelessWidget {
                                 context: context,
                                 message: "Favorite Count: $favCount");
                           },
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.favorite,
-                                color: Colors.red,
-                              ),
-                              const SizedBox(width: 5),
-                              Text(
-                                favCount,
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                            ],
-                          ),
+                          child:
+                              CountBadge(imgIcon: "heart.png", count: favCount),
                         ),
                       ],
                     )

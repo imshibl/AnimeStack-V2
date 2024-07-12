@@ -32,7 +32,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Stack - Otaku friend'),
+        title: Text('Stack - AI Otaku friend'),
       ),
       body: Column(
         children: [
