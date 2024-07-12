@@ -19,6 +19,9 @@ class AppTheme {
       ),
       buttonTheme: const ButtonThemeData(
         buttonColor: Colors.black,
+      ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: Colors.blueAccent,
       ));
 
   static ThemeData darkTheme = ThemeData(
@@ -39,5 +42,8 @@ class AppTheme {
       ),
       buttonTheme: const ButtonThemeData(
         buttonColor: Colors.white,
+      ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: Colors.blueAccent,
       ));
 }

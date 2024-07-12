@@ -53,8 +53,11 @@ class _ChatViewState extends ConsumerState<ChatView> {
                   ),
                   if (aiChat.messages.isEmpty)
                     Container(
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.all(5),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.grey),
                       ),
                       child: Text(
                         "Stack is getting ready, Please wait...",
@@ -74,6 +77,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
           ChatInputField(
             controller: chatTextController,
             sendMessage: () {
+              if (chatTextController.text.isEmpty) return;
               ref
                   .read(aiChatProvider.notifier)
                   .sendMessage(chatTextController.text);

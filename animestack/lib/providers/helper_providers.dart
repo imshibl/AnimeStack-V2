@@ -7,3 +7,5 @@ final baseUrlProvider = Provider<String>((ref) {
 final aiChatBaseUrlProvider = Provider<String>((ref) {
   return "https://animestack-v2.onrender.com/";
 });
+
+final showBackToTopProvider = StateProvider<bool>((ref) => false);

@@ -5,6 +5,7 @@ import 'package:animestack/config/routes.dart';
 import 'package:animestack/providers/anime_provider.dart';
 import 'package:animestack/providers/category_provider.dart';
 import 'package:animestack/providers/chat_provider.dart';
+import 'package:animestack/providers/helper_providers.dart';
 import 'package:animestack/providers/theme_provider.dart';
 
 import 'package:animestack/utils/helpers/convert_average_rating.dart';
@@ -20,12 +21,32 @@ class HomeView extends ConsumerStatefulWidget {
 }
 
 class _HomeViewState extends ConsumerState<HomeView> {
+  final ScrollController _scrollController = ScrollController();
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(aiChatProvider.notifier).loadAiChat();
     });
+
+    _scrollController.addListener(() {
+      if (_scrollController.offset >= 400) {
+        ref.read(showBackToTopProvider.notifier).state = true;
+      } else {
+        ref.read(showBackToTopProvider.notifier).state = false;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
+  }
+
+  void _scrollToTop() {
+    _scrollController.animateTo(0,
+        duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
   }
 
   @override
@@ -93,10 +114,10 @@ class _HomeViewState extends ConsumerState<HomeView> {
       )),
       body: RefreshIndicator(
         onRefresh: () {
-          ref.refresh(animeProvider);
-          return Future<void>.value();
+          return ref.refresh(animeProvider.future);
         },
         child: SingleChildScrollView(
+          controller: _scrollController,
           child: Column(
             children: [
               Container(
@@ -186,63 +207,112 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                   final posterImage = data[index].posterImage;
                                   final rating =
                                       convertAverageRating(data[index].rating);
-                                  return Container(
-                                      margin: EdgeInsets.only(bottom: 10),
-                                      padding: EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(
-                                          color: Colors.black38,
+                                  final type = data[index].subType;
+                                  final ageRating = data[index].ageRating;
+                                  return Column(
+                                    children: [
+                                      Container(
+                                        margin: EdgeInsets.only(bottom: 10),
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color: Colors.black38,
+                                          ),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                  child: Image.network(
+                                                    posterImage,
+                                                    height: 150,
+                                                  ),
+                                                ),
+                                                SizedBox(width: 10),
+                                                Flexible(
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        animeName,
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .titleMedium,
+                                                        maxLines: 3,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          Text(
+                                                            type,
+                                                            style: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .bodyMedium,
+                                                          ),
+                                                          Text(
+                                                            " - $ageRating",
+                                                            style: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .bodyMedium,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Text(
+                                                            "$rating",
+                                                            style: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .bodyMedium,
+                                                          ),
+                                                          Icon(
+                                                            Icons.star,
+                                                            color:
+                                                                Colors.yellow,
+                                                            size: 18,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                IconButton(
+                                                  onPressed: () {},
+                                                  icon: Icon(Icons.more_vert),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                child: Image.network(
-                                                  posterImage,
-                                                  height: 150,
-                                                ),
-                                              ),
-                                              SizedBox(width: 10),
-                                              Flexible(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      animeName,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .titleMedium,
-                                                      maxLines: 3,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ),
-                                                    Text(
-                                                      "TV show",
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyLarge,
-                                                    ),
-                                                    Text(
-                                                      "$rating/10",
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyMedium,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ));
+                                      if (index == data.length - 1)
+                                        GestureDetector(
+                                            onTap: () {
+                                              ref
+                                                  .read(animeProvider.notifier)
+                                                  .showMoreAnime();
+                                            },
+                                            child: Container(
+                                                margin: EdgeInsets.all(5),
+                                                child: Text("Show more"))),
+                                    ],
+                                  );
                                 });
                           },
                           error: (error, stackTrace) =>
@@ -257,6 +327,17 @@ class _HomeViewState extends ConsumerState<HomeView> {
           ),
         ),
       ),
+      floatingActionButton: Consumer(builder: (context, ref, _) {
+        final showBackToTop = ref.watch(showBackToTopProvider);
+        return showBackToTop
+            ? FloatingActionButton(
+                onPressed: () {
+                  _scrollToTop();
+                },
+                child: Icon(Icons.arrow_upward_sharp),
+              )
+            : SizedBox();
+      }),
     );
   }
 }

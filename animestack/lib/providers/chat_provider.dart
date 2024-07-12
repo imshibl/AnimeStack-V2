@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:animestack/models/chat_model.dart';
-import 'package:animestack/providers/common_providers.dart';
+import 'package:animestack/providers/helper_providers.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
