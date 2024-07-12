@@ -7,6 +7,7 @@ class AnimeModel {
   final String ageRating;
   final String ratingRank;
   final String popularityRank;
+  final String favoritesCount;
   final String status;
   final String? coverImage;
 
@@ -19,6 +20,7 @@ class AnimeModel {
     required this.ageRating,
     required this.ratingRank,
     required this.popularityRank,
+    required this.favoritesCount,
     required this.status,
     this.coverImage,
   });
@@ -35,6 +37,7 @@ class AnimeModel {
       ageRating: attributes['ageRating'] ?? '',
       ratingRank: attributes['ratingRank'].toString(),
       popularityRank: attributes['popularityRank'].toString(),
+      favoritesCount: attributes['favoritesCount'].toString(),
       status: attributes['status'] ?? '',
       coverImage: attributes['coverImage']?['original'],
     );

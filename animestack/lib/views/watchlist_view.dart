@@ -10,6 +10,11 @@ class WatchlistView extends StatefulWidget {
 class _WatchlistViewState extends State<WatchlistView> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Watchlist'),
+      ),
+      body: Container(),
+    );
   }
 }

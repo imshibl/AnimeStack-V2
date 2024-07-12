@@ -11,7 +11,7 @@ import 'package:animestack/providers/theme_provider.dart';
 
 import 'package:animestack/utils/helpers/convert_average_rating.dart';
 import 'package:animestack/utils/helpers/package_info.dart';
-import 'package:animestack/utils/snack_bar.dart';
+import 'package:animestack/widgets/anime_container.dart';
 import 'package:animestack/widgets/category_container.dart';
 
 import 'package:flutter/material.dart';
@@ -77,7 +77,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
           ),
           IconButton(
             onPressed: () {},
-            icon: Icon(Icons.bookmark_outline),
+            icon: Icon(Icons.favorite_border_outlined),
           ),
         ],
       ),
@@ -90,16 +90,24 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 ListTile(
                   title: Text("Home"),
                   leading: Icon(Icons.home_outlined),
+                  onTap: () => globalKey.currentState!.closeDrawer(),
                 ),
                 ListTile(
+                    title: Text("Stack - Otaku friend"),
+                    leading: Icon(Icons.chat_bubble_outline),
+                    onTap: () {
+                      globalKey.currentState!.closeDrawer();
+                      Navigator.of(context).pushNamed(AppRoutes.chat);
+                    }),
+                ListTile(
                   title: Text("Watchlist"),
-                  leading: Icon(Icons.bookmark_outline),
+                  leading: Icon(Icons.favorite_outline),
                 ),
                 ListTile(
                   title: Text("Theme"),
                   leading: ref.read(themeProvider) == ThemeMode.dark
-                      ? Icon(Icons.dark_mode)
-                      : Icon(Icons.light_mode),
+                      ? Icon(Icons.dark_mode_outlined)
+                      : Icon(Icons.light_mode_outlined),
                   trailing: Switch(
                     value: ref.read(themeProvider) == ThemeMode.dark,
                     onChanged: (value) {
@@ -117,7 +125,31 @@ class _HomeViewState extends ConsumerState<HomeView> {
               future: getVersionCode(),
               builder: (context, data) {
                 if (data.hasData) {
-                  return Text(data.data.toString());
+                  return Padding(
+                    padding: EdgeInsets.only(left: 10, bottom: 10),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          "assets/stack_logo.png",
+                          width: 60,
+                        ),
+                        SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "AnimeStack",
+                              style: TextStyle(fontSize: 18),
+                            ),
+                            Text(
+                              "V${data.data}",
+                              style: TextStyle(fontSize: 15),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
                 }
                 return SizedBox();
               }),
@@ -133,29 +165,27 @@ class _HomeViewState extends ConsumerState<HomeView> {
             children: [
               Container(
                 margin: EdgeInsets.all(10),
-                child: Builder(builder: (context) {
-                  return Consumer(builder: (context, ref, _) {
-                    final animeList = ref.watch(categoryProvider);
-                    return GridView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: animeList.length,
-                      shrinkWrap: true,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 10,
-                          crossAxisSpacing: 10,
-                          childAspectRatio: 2),
-                      itemBuilder: (context, index) {
-                        String categoryName =
-                            animeList[index].categoryName.displayName;
-                        String categoryImage = animeList[index].categoryImage;
+                child: Consumer(builder: (context, ref, _) {
+                  final animeList = ref.watch(categoryProvider);
+                  return GridView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: animeList.length,
+                    shrinkWrap: true,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 10,
+                        childAspectRatio: 2),
+                    itemBuilder: (context, index) {
+                      String categoryName =
+                          animeList[index].categoryName.displayName;
+                      String categoryImage = animeList[index].categoryImage;
 
-                        return CategoryContainer(
-                            categoryImage: categoryImage,
-                            categoryName: categoryName);
-                      },
-                    );
-                  });
+                      return CategoryContainer(
+                          categoryImage: categoryImage,
+                          categoryName: categoryName);
+                    },
+                  );
                 }),
               ),
               Container(
@@ -191,170 +221,19 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                       data[index].ratingRank != "null"
                                           ? data[index].ratingRank
                                           : "N/A";
+                                  final favCount = data[index].favoritesCount;
                                   return Column(
                                     children: [
-                                      Container(
-                                        margin: EdgeInsets.only(bottom: 10),
-                                        padding: EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border: Border.all(
-                                            color: Colors.black38,
-                                          ),
-                                        ),
-                                        child: Column(
-                                          children: [
-                                            Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Stack(
-                                                  children: [
-                                                    ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
-                                                      child: Image.network(
-                                                        posterImage,
-                                                        height: 150,
-                                                      ),
-                                                    ),
-                                                    Container(
-                                                      margin: EdgeInsets.all(5),
-                                                      padding:
-                                                          EdgeInsets.all(5),
-                                                      decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10),
-                                                        color: Colors.black
-                                                            .withOpacity(0.7),
-                                                      ),
-                                                      child: Row(
-                                                        children: [
-                                                          Image.asset(
-                                                            "assets/icons/ranking.png",
-                                                            width: 20,
-                                                          ),
-                                                          Text(
-                                                            ratingRank,
-                                                            style: Theme.of(
-                                                                    context)
-                                                                .textTheme
-                                                                .titleSmall!
-                                                                .copyWith(
-                                                                    color: Colors
-                                                                        .white),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(width: 10),
-                                                Flexible(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        animeName,
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .titleMedium,
-                                                        maxLines: 3,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                      ),
-                                                      Row(
-                                                        children: [
-                                                          Text(
-                                                            type,
-                                                            style: Theme.of(
-                                                                    context)
-                                                                .textTheme
-                                                                .bodyMedium,
-                                                          ),
-                                                          Text(
-                                                            " - $ageRating",
-                                                            style: Theme.of(
-                                                                    context)
-                                                                .textTheme
-                                                                .bodyMedium,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Row(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Text(
-                                                            "$rating",
-                                                            style: Theme.of(
-                                                                    context)
-                                                                .textTheme
-                                                                .bodyMedium,
-                                                          ),
-                                                          Icon(
-                                                            Icons.star,
-                                                            color:
-                                                                Colors.yellow,
-                                                            size: 18,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Text(
-                                                        "Status: $status",
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .bodyMedium,
-                                                      ),
-                                                      SizedBox(
-                                                        height: 5,
-                                                      ),
-                                                      GestureDetector(
-                                                        onTap: () {
-                                                          showSnackBar(
-                                                              context: context,
-                                                              message:
-                                                                  "Popularity Rank: $popularityRank");
-                                                        },
-                                                        child: Row(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .center,
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          children: [
-                                                            Image.asset(
-                                                              "assets/icons/trending.png",
-                                                              width: 25,
-                                                            ),
-                                                            Text(
-                                                              popularityRank,
-                                                              style: Theme.of(
-                                                                      context)
-                                                                  .textTheme
-                                                                  .bodyMedium,
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      )
-                                                    ],
-                                                  ),
-                                                ),
-                                                IconButton(
-                                                  onPressed: () {},
-                                                  icon: Icon(Icons.more_vert),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                      AnimeContainer(
+                                          posterImage: posterImage,
+                                          ratingRank: ratingRank,
+                                          animeName: animeName,
+                                          type: type,
+                                          ageRating: ageRating,
+                                          rating: rating,
+                                          status: status,
+                                          popularityRank: popularityRank,
+                                          favCount: favCount),
                                       if (index == data.length - 1)
                                         GestureDetector(
                                             onTap: () {

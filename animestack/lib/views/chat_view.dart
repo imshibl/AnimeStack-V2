@@ -52,16 +52,20 @@ class _ChatViewState extends ConsumerState<ChatView> {
                     },
                   ),
                   if (aiChat.messages.isEmpty)
-                    Container(
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.grey),
-                      ),
-                      child: Text(
-                        "Stack is getting ready, Please wait...",
-                        style: Theme.of(context).textTheme.titleSmall,
+                    Center(
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 100,
+                        width: 250,
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.grey),
+                        ),
+                        child: Text(
+                          "Stack is getting ready, Please wait...",
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
                       ),
                     ),
                   if (aiChat.isLoading && aiChat.messages.isNotEmpty)
