@@ -191,18 +191,65 @@ class _AnimeCollectionViewState extends ConsumerState<AnimeCollectionView> {
                           ? data[index].ratingRank
                           : "N/A";
 
+                      Future<bool> isAnimeAlreadyInWatchlist = ref
+                          .read(watchListProvider.notifier)
+                          .isInWatchlist(data[index].title);
+
                       return Column(
                         children: [
                           ListAnimeContainer(
-                              posterImage: posterImage,
-                              ratingRank: ratingRank,
-                              animeName: animeName,
-                              type: type,
-                              ageRating: ageRating,
-                              rating: rating,
-                              status: status,
-                              popularityRank: popularityRank,
-                              favCount: favCount),
+                            posterImage: posterImage,
+                            ratingRank: ratingRank,
+                            animeName: animeName,
+                            type: type,
+                            ageRating: ageRating,
+                            rating: rating,
+                            status: status,
+                            popularityRank: popularityRank,
+                            favCount: favCount,
+                            onMenuIconPressed: (BuildContext context) async {
+                              // Find the RenderBox of the GridAnimeContainer
+                              final RenderBox renderBox =
+                                  context.findRenderObject() as RenderBox;
+                              final position =
+                                  renderBox.localToGlobal(Offset.zero);
+                              final size = renderBox.size;
+                              ref.watch(watchListProvider);
+                              showMenu(
+                                  context: context,
+                                  position: RelativeRect.fromLTRB(
+                                    position.dx +
+                                        size.width -
+                                        40, // Right align the menu
+                                    position.dy + 40, // Position below the icon
+                                    position.dx + size.width,
+                                    position.dy + size.height,
+                                  ),
+                                  items: [
+                                    PopupMenuItem(
+                                      value: 1,
+                                      child: await isAnimeAlreadyInWatchlist
+                                          ? Text("Remove from watchlist")
+                                          : Text("Add to watchlist"),
+                                      onTap: () async {
+                                        if (await isAnimeAlreadyInWatchlist) {
+                                          ref
+                                              .read(watchListProvider.notifier)
+                                              .removeFromWatchlist(
+                                                  data[index].title);
+                                        } else {
+                                          WatchlistAnime anime = WatchlistAnime(
+                                              id: data[index].title,
+                                              title: data[index].title);
+                                          ref
+                                              .read(watchListProvider.notifier)
+                                              .addToWatchlist(anime);
+                                        }
+                                      },
+                                    ),
+                                  ]);
+                            },
+                          ),
                           if (index == data.length - 1)
                             GestureDetector(
                               onTap: () {

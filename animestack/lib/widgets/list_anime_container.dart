@@ -15,6 +15,7 @@ class ListAnimeContainer extends StatelessWidget {
     required this.status,
     required this.popularityRank,
     required this.favCount,
+    required this.onMenuIconPressed,
   });
 
   final String posterImage;
@@ -26,6 +27,7 @@ class ListAnimeContainer extends StatelessWidget {
   final String status;
   final String popularityRank;
   final String favCount;
+  final Function(BuildContext) onMenuIconPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +138,9 @@ class ListAnimeContainer extends StatelessWidget {
                 ),
               ),
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  onMenuIconPressed(context);
+                },
                 icon: const Icon(Icons.more_vert),
               ),
             ],
