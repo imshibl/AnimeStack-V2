@@ -34,7 +34,7 @@ class MyApp extends ConsumerWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      darkTheme: ThemeData.dark(),
+      darkTheme: AppTheme.darkTheme,
       themeMode: theme,
       initialRoute: AppRoutes.splash,
       onGenerateRoute: AppRoutes.generateRoute,

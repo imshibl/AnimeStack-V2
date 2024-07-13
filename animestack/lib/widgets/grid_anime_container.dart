@@ -1,11 +1,14 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:animestack/config/hive_db/watch_list_anime.dart';
+import 'package:animestack/providers/watch_list_provider.dart';
 import 'package:animestack/widgets/anime_container_widgets.dart';
 
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class GridAnimeContainer extends StatelessWidget {
+class GridAnimeContainer extends ConsumerWidget {
   final String title;
   final String posterImage;
   final String rating;
@@ -15,7 +18,6 @@ class GridAnimeContainer extends StatelessWidget {
   final String popularityRank;
   final String ratingRank;
   final String favCount;
-  final Function(BuildContext) onMenuIconPressed;
 
   const GridAnimeContainer({
     super.key,
@@ -28,11 +30,14 @@ class GridAnimeContainer extends StatelessWidget {
     required this.popularityRank,
     required this.ratingRank,
     required this.favCount,
-    required this.onMenuIconPressed,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(watchListProvider);
+    Future<bool> isAnimeAlreadyInWatchlist =
+        ref.read(watchListProvider.notifier).isInWatchlist(title);
+
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade300),
@@ -58,8 +63,46 @@ class GridAnimeContainer extends StatelessWidget {
                 children: [
                   RatingRankBadge(ratingRank: ratingRank),
                   IconButton(
-                    onPressed: () {
-                      onMenuIconPressed(context);
+                    onPressed: () async {
+                      // Find the RenderBox of the GridAnimeContainer
+                      final RenderBox renderBox =
+                          context.findRenderObject() as RenderBox;
+                      final position = renderBox.localToGlobal(Offset.zero);
+                      final size = renderBox.size;
+
+                      final isInWatchlist = await isAnimeAlreadyInWatchlist;
+
+                      showMenu(
+                          context: context,
+                          position: RelativeRect.fromLTRB(
+                            position.dx +
+                                size.width -
+                                40, // Right align the menu
+                            position.dy + 40, // Position below the icon
+                            position.dx + size.width,
+                            position.dy + size.height,
+                          ),
+                          items: [
+                            PopupMenuItem(
+                              value: 1,
+                              child: Text(isInWatchlist
+                                  ? "Remove from watchlist"
+                                  : "Add to watchlist"),
+                              onTap: () {
+                                if (isInWatchlist) {
+                                  ref
+                                      .read(watchListProvider.notifier)
+                                      .removeFromWatchlist(title);
+                                } else {
+                                  WatchlistAnime anime =
+                                      WatchlistAnime(id: title, title: title);
+                                  ref
+                                      .read(watchListProvider.notifier)
+                                      .addToWatchlist(anime);
+                                }
+                              },
+                            ),
+                          ]);
                     },
                     icon: Icon(
                       Icons.more_vert,

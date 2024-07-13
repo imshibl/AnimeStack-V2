@@ -1,11 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:animestack/config/hive_db/watch_list_anime.dart';
 import 'package:animestack/models/category_model.dart';
 import 'package:animestack/providers/category_provider.dart';
 import 'package:animestack/providers/helper_providers.dart';
 import 'package:animestack/providers/sorted_anime_provider.dart';
-import 'package:animestack/providers/watch_list_provider.dart';
 import 'package:animestack/utils/helpers/convert_average_rating.dart';
 import 'package:animestack/widgets/grid_anime_container.dart';
 import 'package:animestack/widgets/list_anime_container.dart';
@@ -85,10 +83,6 @@ class _AnimeCollectionViewState extends ConsumerState<AnimeCollectionView> {
                                       ? data[index].ratingRank
                                       : "N/A";
 
-                              Future<bool> isAnimeAlreadyInWatchlist = ref
-                                  .read(watchListProvider.notifier)
-                                  .isInWatchlist(data[index].title);
-
                               return GridAnimeContainer(
                                 posterImage: posterImage,
                                 title: animeName,
@@ -99,53 +93,6 @@ class _AnimeCollectionViewState extends ConsumerState<AnimeCollectionView> {
                                 popularityRank: popularityRank,
                                 ratingRank: ratingRank,
                                 favCount: favCount,
-                                onMenuIconPressed:
-                                    (BuildContext context) async {
-                                  // Find the RenderBox of the GridAnimeContainer
-                                  final RenderBox renderBox =
-                                      context.findRenderObject() as RenderBox;
-                                  final position =
-                                      renderBox.localToGlobal(Offset.zero);
-                                  final size = renderBox.size;
-                                  ref.watch(watchListProvider);
-                                  showMenu(
-                                      context: context,
-                                      position: RelativeRect.fromLTRB(
-                                        position.dx +
-                                            size.width -
-                                            40, // Right align the menu
-                                        position.dy +
-                                            40, // Position below the icon
-                                        position.dx + size.width,
-                                        position.dy + size.height,
-                                      ),
-                                      items: [
-                                        PopupMenuItem(
-                                          value: 1,
-                                          child: await isAnimeAlreadyInWatchlist
-                                              ? Text("Remove from watchlist")
-                                              : Text("Add to watchlist"),
-                                          onTap: () async {
-                                            if (await isAnimeAlreadyInWatchlist) {
-                                              ref
-                                                  .read(watchListProvider
-                                                      .notifier)
-                                                  .removeFromWatchlist(
-                                                      data[index].title);
-                                            } else {
-                                              WatchlistAnime anime =
-                                                  WatchlistAnime(
-                                                      id: data[index].title,
-                                                      title: data[index].title);
-                                              ref
-                                                  .read(watchListProvider
-                                                      .notifier)
-                                                  .addToWatchlist(anime);
-                                            }
-                                          },
-                                        ),
-                                      ]);
-                                },
                               );
                             },
                             childCount: data.length,
@@ -191,10 +138,6 @@ class _AnimeCollectionViewState extends ConsumerState<AnimeCollectionView> {
                           ? data[index].ratingRank
                           : "N/A";
 
-                      Future<bool> isAnimeAlreadyInWatchlist = ref
-                          .read(watchListProvider.notifier)
-                          .isInWatchlist(data[index].title);
-
                       return Column(
                         children: [
                           ListAnimeContainer(
@@ -207,48 +150,6 @@ class _AnimeCollectionViewState extends ConsumerState<AnimeCollectionView> {
                             status: status,
                             popularityRank: popularityRank,
                             favCount: favCount,
-                            onMenuIconPressed: (BuildContext context) async {
-                              // Find the RenderBox of the GridAnimeContainer
-                              final RenderBox renderBox =
-                                  context.findRenderObject() as RenderBox;
-                              final position =
-                                  renderBox.localToGlobal(Offset.zero);
-                              final size = renderBox.size;
-                              ref.watch(watchListProvider);
-                              showMenu(
-                                  context: context,
-                                  position: RelativeRect.fromLTRB(
-                                    position.dx +
-                                        size.width -
-                                        40, // Right align the menu
-                                    position.dy + 40, // Position below the icon
-                                    position.dx + size.width,
-                                    position.dy + size.height,
-                                  ),
-                                  items: [
-                                    PopupMenuItem(
-                                      value: 1,
-                                      child: await isAnimeAlreadyInWatchlist
-                                          ? Text("Remove from watchlist")
-                                          : Text("Add to watchlist"),
-                                      onTap: () async {
-                                        if (await isAnimeAlreadyInWatchlist) {
-                                          ref
-                                              .read(watchListProvider.notifier)
-                                              .removeFromWatchlist(
-                                                  data[index].title);
-                                        } else {
-                                          WatchlistAnime anime = WatchlistAnime(
-                                              id: data[index].title,
-                                              title: data[index].title);
-                                          ref
-                                              .read(watchListProvider.notifier)
-                                              .addToWatchlist(anime);
-                                        }
-                                      },
-                                    ),
-                                  ]);
-                            },
                           ),
                           if (index == data.length - 1)
                             GestureDetector(

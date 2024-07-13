@@ -1,9 +1,12 @@
+import 'package:animestack/config/hive_db/watch_list_anime.dart';
+import 'package:animestack/providers/watch_list_provider.dart';
 import 'package:animestack/utils/snack_bar.dart';
 import 'package:animestack/widgets/anime_container_widgets.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ListAnimeContainer extends StatelessWidget {
+class ListAnimeContainer extends ConsumerWidget {
   const ListAnimeContainer({
     super.key,
     required this.posterImage,
@@ -15,7 +18,6 @@ class ListAnimeContainer extends StatelessWidget {
     required this.status,
     required this.popularityRank,
     required this.favCount,
-    required this.onMenuIconPressed,
   });
 
   final String posterImage;
@@ -27,10 +29,13 @@ class ListAnimeContainer extends StatelessWidget {
   final String status;
   final String popularityRank;
   final String favCount;
-  final Function(BuildContext) onMenuIconPressed;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(watchListProvider);
+    Future<bool> isAnimeAlreadyInWatchlist =
+        ref.read(watchListProvider.notifier).isInWatchlist(animeName);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(10),
@@ -138,8 +143,48 @@ class ListAnimeContainer extends StatelessWidget {
                 ),
               ),
               IconButton(
-                onPressed: () {
-                  onMenuIconPressed(context);
+                onPressed: () async {
+                  // Find the RenderBox of the GridAnimeContainer
+                  final RenderBox renderBox =
+                      context.findRenderObject() as RenderBox;
+                  final position = renderBox.localToGlobal(Offset.zero);
+                  final size = renderBox.size;
+
+                  final isInWatchlist = await isAnimeAlreadyInWatchlist;
+
+                  showMenu(
+                      context: context,
+                      position: RelativeRect.fromLTRB(
+                        position.dx + size.width - 40, // Right align the menu
+                        position.dy + 40, // Position below the icon
+                        position.dx + size.width,
+                        position.dy + size.height,
+                      ),
+                      items: [
+                        PopupMenuItem(
+                          value: 1,
+                          child: isInWatchlist
+                              ? const Text("Remove from watchlist")
+                              : const Text("Add to watchlist"),
+                          onTap: () {
+                            if (isInWatchlist) {
+                              ref
+                                  .read(watchListProvider.notifier)
+                                  .removeFromWatchlist(
+                                    animeName,
+                                  );
+                            } else {
+                              WatchlistAnime anime = WatchlistAnime(
+                                id: animeName,
+                                title: animeName,
+                              );
+                              ref
+                                  .read(watchListProvider.notifier)
+                                  .addToWatchlist(anime);
+                            }
+                          },
+                        ),
+                      ]);
                 },
                 icon: const Icon(Icons.more_vert),
               ),
