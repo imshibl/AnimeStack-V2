@@ -1,10 +1,9 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:animestack/models/category_model.dart';
 import 'package:animestack/providers/category_provider.dart';
 import 'package:animestack/providers/helper_providers.dart';
 import 'package:animestack/providers/sorted_anime_provider.dart';
 import 'package:animestack/utils/helpers/convert_average_rating.dart';
+import 'package:animestack/widgets/anime_description_dialog.dart';
 import 'package:animestack/widgets/grid_anime_container.dart';
 import 'package:animestack/widgets/list_anime_container.dart';
 import 'package:flutter/material.dart';
@@ -45,8 +44,8 @@ class _AnimeCollectionViewState extends ConsumerState<AnimeCollectionView> {
                 viewTypeBox.put("isGridView", !isGridView);
               },
               icon: isGridView
-                  ? Icon(Icons.list_alt_outlined)
-                  : Icon(Icons.grid_view_outlined),
+                  ? const Icon(Icons.list_alt_outlined)
+                  : const Icon(Icons.grid_view_outlined),
             ),
           ],
         ),
@@ -55,13 +54,13 @@ class _AnimeCollectionViewState extends ConsumerState<AnimeCollectionView> {
           return sortedAnimeList.when(data: (data) {
             return isGridView
                 ? CustomScrollView(
-                    physics: BouncingScrollPhysics(),
+                    physics: const BouncingScrollPhysics(),
                     slivers: [
                       SliverPadding(
-                        padding: EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(10),
                         sliver: SliverGrid(
                           gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
+                              const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
                             mainAxisSpacing: 10,
                             crossAxisSpacing: 10,
@@ -70,7 +69,9 @@ class _AnimeCollectionViewState extends ConsumerState<AnimeCollectionView> {
                           delegate: SliverChildBuilderDelegate(
                             (context, index) {
                               final animeName = data[index].title;
+                              final animeDescription = data[index].description;
                               final posterImage = data[index].posterImage;
+                              final coverImage = data[index].coverImage;
                               final rating =
                                   convertAverageRating(data[index].rating);
                               final type = data[index].subType;
@@ -83,16 +84,29 @@ class _AnimeCollectionViewState extends ConsumerState<AnimeCollectionView> {
                                       ? data[index].ratingRank
                                       : "N/A";
 
-                              return GridAnimeContainer(
-                                posterImage: posterImage,
-                                title: animeName,
-                                rating: rating.toString(),
-                                subType: type,
-                                ageRating: ageRating,
-                                status: status,
-                                popularityRank: popularityRank,
-                                ratingRank: ratingRank,
-                                favCount: favCount,
+                              return GestureDetector(
+                                onTap: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AnimeDescriptionDialog(
+                                            coverImage: coverImage,
+                                            posterImage: posterImage,
+                                            animeName: animeName,
+                                            animeDescription: animeDescription);
+                                      });
+                                },
+                                child: GridAnimeContainer(
+                                  posterImage: posterImage,
+                                  title: animeName,
+                                  rating: rating.toString(),
+                                  subType: type,
+                                  ageRating: ageRating,
+                                  status: status,
+                                  popularityRank: popularityRank,
+                                  ratingRank: ratingRank,
+                                  favCount: favCount,
+                                ),
                               );
                             },
                             childCount: data.length,
@@ -110,7 +124,7 @@ class _AnimeCollectionViewState extends ConsumerState<AnimeCollectionView> {
                           },
                           child: Container(
                             alignment: Alignment.center,
-                            margin: EdgeInsets.only(bottom: 10),
+                            margin: const EdgeInsets.only(bottom: 10),
                             child: Text(
                               "Show more",
                               style: Theme.of(context).textTheme.bodyLarge,
@@ -121,13 +135,15 @@ class _AnimeCollectionViewState extends ConsumerState<AnimeCollectionView> {
                     ],
                   )
                 : ListView.builder(
-                    physics: BouncingScrollPhysics(),
+                    physics: const BouncingScrollPhysics(),
                     shrinkWrap: true,
-                    padding: EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
                     itemCount: data.length,
                     itemBuilder: (context, index) {
                       final animeName = data[index].title;
+                      final animeDescription = data[index].description;
                       final posterImage = data[index].posterImage;
+                      final coverImage = data[index].coverImage;
                       final rating = convertAverageRating(data[index].rating);
                       final type = data[index].subType;
                       final ageRating = data[index].ageRating;
@@ -140,16 +156,29 @@ class _AnimeCollectionViewState extends ConsumerState<AnimeCollectionView> {
 
                       return Column(
                         children: [
-                          ListAnimeContainer(
-                            posterImage: posterImage,
-                            ratingRank: ratingRank,
-                            animeName: animeName,
-                            type: type,
-                            ageRating: ageRating,
-                            rating: rating,
-                            status: status,
-                            popularityRank: popularityRank,
-                            favCount: favCount,
+                          GestureDetector(
+                            onTap: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AnimeDescriptionDialog(
+                                        coverImage: coverImage,
+                                        posterImage: posterImage,
+                                        animeName: animeName,
+                                        animeDescription: animeDescription);
+                                  });
+                            },
+                            child: ListAnimeContainer(
+                              posterImage: posterImage,
+                              ratingRank: ratingRank,
+                              animeName: animeName,
+                              type: type,
+                              ageRating: ageRating,
+                              rating: rating,
+                              status: status,
+                              popularityRank: popularityRank,
+                              favCount: favCount,
+                            ),
                           ),
                           if (index == data.length - 1)
                             GestureDetector(
@@ -163,7 +192,7 @@ class _AnimeCollectionViewState extends ConsumerState<AnimeCollectionView> {
                               },
                               child: Container(
                                 alignment: Alignment.center,
-                                margin: EdgeInsets.only(bottom: 10),
+                                margin: const EdgeInsets.only(bottom: 10),
                                 child: Text(
                                   "Show more",
                                   style: Theme.of(context).textTheme.bodyLarge,
@@ -176,7 +205,7 @@ class _AnimeCollectionViewState extends ConsumerState<AnimeCollectionView> {
           }, error: (error, stacktrace) {
             return Center(child: Text(error.toString()));
           }, loading: () {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           });

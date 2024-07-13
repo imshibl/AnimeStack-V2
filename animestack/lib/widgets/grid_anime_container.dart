@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:animestack/config/hive_db/watch_list_anime.dart';
 import 'package:animestack/providers/watch_list_provider.dart';
 import 'package:animestack/widgets/anime_container_widgets.dart';
@@ -104,7 +102,7 @@ class GridAnimeContainer extends ConsumerWidget {
                             ),
                           ]);
                     },
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.more_vert,
                       color: Colors.white,
                     ),
@@ -147,14 +145,14 @@ class GridAnimeContainer extends ConsumerWidget {
                     const Icon(Icons.star, color: Colors.amber, size: 18),
                     const SizedBox(width: 4),
                     Text(rating, style: const TextStyle(fontSize: 14)),
-                    Spacer(),
+                    const Spacer(),
                     Text(
                       subType,
                       style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     ),
                   ],
                 ),
-                SizedBox(height: 5),
+                const SizedBox(height: 5),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'dart:convert';
 
 import 'package:animestack/models/chat_model.dart';
@@ -32,7 +30,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Stack - AI Otaku friend'),
+        title: const Text('Stack - AI Otaku friend'),
       ),
       body: Column(
         children: [
@@ -57,7 +55,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
                         alignment: Alignment.center,
                         height: 100,
                         width: 250,
-                        padding: EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(color: Colors.grey),
@@ -69,7 +67,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
                       ),
                     ),
                   if (aiChat.isLoading && aiChat.messages.isNotEmpty)
-                    Positioned(
+                    const Positioned(
                       left: 16,
                       bottom: 10,
                       child: TypingIndicator(),
@@ -105,9 +103,9 @@ class ChatMessageWidget extends StatelessWidget {
       alignment: !chat.isAi ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
           margin: !chat.isAi
-              ? EdgeInsets.only(right: 10, left: 60, top: 5, bottom: 5)
-              : EdgeInsets.only(right: 60, left: 10, top: 5, bottom: 5),
-          padding: EdgeInsets.all(10),
+              ? const EdgeInsets.only(right: 10, left: 60, top: 5, bottom: 5)
+              : const EdgeInsets.only(right: 60, left: 10, top: 5, bottom: 5),
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: !chat.isAi ? Colors.blueAccent : Colors.green,
             borderRadius: BorderRadius.circular(10),
@@ -139,7 +137,7 @@ class ChatMessageWidget extends StatelessWidget {
       }
       spans.add(TextSpan(
         text: match.group(1),
-        style: TextStyle(fontWeight: FontWeight.bold),
+        style: const TextStyle(fontWeight: FontWeight.bold),
       ));
       lastMatchEnd = match.end;
     }
@@ -184,7 +182,7 @@ class ChatInputField extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: Icon(Icons.send),
+            icon: const Icon(Icons.send),
             onPressed: sendMessage,
           ),
         ],
@@ -225,18 +223,18 @@ class _TypingIndicatorState extends State<TypingIndicator>
       animation: _controller,
       builder: (context, child) {
         return Container(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: List.generate(3, (index) {
               return Padding(
-                padding: EdgeInsets.only(right: 4),
+                padding: const EdgeInsets.only(right: 4),
                 child: Opacity(
                   opacity: (index + 1) / 3 <= _controller.value ? 1.0 : 0.2,
                   child: Container(
                     width: 8,
                     height: 8,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Colors.grey,
                       shape: BoxShape.circle,
                     ),

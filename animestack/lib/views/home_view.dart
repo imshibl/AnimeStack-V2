@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'package:animestack/config/routes.dart';
 import 'package:animestack/models/category_model.dart';
 
@@ -11,6 +9,7 @@ import 'package:animestack/providers/theme_provider.dart';
 
 import 'package:animestack/utils/helpers/convert_average_rating.dart';
 import 'package:animestack/utils/helpers/package_info.dart';
+import 'package:animestack/widgets/anime_description_dialog.dart';
 import 'package:animestack/widgets/list_anime_container.dart';
 import 'package:animestack/widgets/category_container.dart';
 
@@ -52,7 +51,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
   void _scrollToTop() {
     _scrollController.animateTo(0,
-        duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+        duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
   }
 
   @override
@@ -61,25 +60,25 @@ class _HomeViewState extends ConsumerState<HomeView> {
     return Scaffold(
       key: globalKey,
       appBar: AppBar(
-        title: Text("AnimeStack"),
+        title: const Text("AnimeStack"),
         leading: IconButton(
           onPressed: () {
             globalKey.currentState!.openDrawer();
           },
-          icon: Icon(Icons.menu),
+          icon: const Icon(Icons.menu),
         ),
         actions: [
           IconButton(
             onPressed: () {
               Navigator.pushNamed(context, AppRoutes.chat);
             },
-            icon: Icon(Icons.chat_bubble_outline),
+            icon: const Icon(Icons.chat_bubble_outline),
           ),
           IconButton(
             onPressed: () {
               Navigator.pushNamed(context, AppRoutes.watchlist);
             },
-            icon: Icon(Icons.favorite_border_outlined),
+            icon: const Icon(Icons.favorite_border_outlined),
           ),
         ],
       ),
@@ -90,30 +89,30 @@ class _HomeViewState extends ConsumerState<HomeView> {
             child: ListView(
               children: [
                 ListTile(
-                  title: Text("Home"),
-                  leading: Icon(Icons.home_outlined),
+                  title: const Text("Home"),
+                  leading: const Icon(Icons.home_outlined),
                   onTap: () => globalKey.currentState!.closeDrawer(),
                 ),
                 ListTile(
-                    title: Text("Stack - AI Otaku friend"),
-                    leading: Icon(Icons.chat_bubble_outline),
+                    title: const Text("Stack - AI Otaku friend"),
+                    leading: const Icon(Icons.chat_bubble_outline),
                     onTap: () {
                       globalKey.currentState!.closeDrawer();
                       Navigator.of(context).pushNamed(AppRoutes.chat);
                     }),
                 ListTile(
-                  title: Text("Watchlist"),
-                  leading: Icon(Icons.favorite_outline),
+                  title: const Text("Watchlist"),
+                  leading: const Icon(Icons.favorite_outline),
                   onTap: () {
                     globalKey.currentState!.closeDrawer();
                     Navigator.pushNamed(context, AppRoutes.watchlist);
                   },
                 ),
                 ListTile(
-                  title: Text("Theme"),
+                  title: const Text("Theme"),
                   leading: ref.read(themeProvider) == ThemeMode.dark
-                      ? Icon(Icons.dark_mode_outlined)
-                      : Icon(Icons.light_mode_outlined),
+                      ? const Icon(Icons.dark_mode_outlined)
+                      : const Icon(Icons.light_mode_outlined),
                   trailing: Switch(
                     value: ref.read(themeProvider) == ThemeMode.dark,
                     onChanged: (value) {
@@ -132,24 +131,24 @@ class _HomeViewState extends ConsumerState<HomeView> {
               builder: (context, data) {
                 if (data.hasData) {
                   return Padding(
-                    padding: EdgeInsets.only(left: 10, bottom: 10),
+                    padding: const EdgeInsets.only(left: 10, bottom: 10),
                     child: Row(
                       children: [
                         Image.asset(
                           "assets/stack_logo.png",
                           width: 60,
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               "AnimeStack",
                               style: TextStyle(fontSize: 18),
                             ),
                             Text(
                               "V${data.data}",
-                              style: TextStyle(fontSize: 15),
+                              style: const TextStyle(fontSize: 15),
                             ),
                           ],
                         ),
@@ -157,7 +156,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     ),
                   );
                 }
-                return SizedBox();
+                return const SizedBox();
               }),
         ],
       )),
@@ -170,18 +169,19 @@ class _HomeViewState extends ConsumerState<HomeView> {
           child: Column(
             children: [
               Container(
-                margin: EdgeInsets.all(10),
+                margin: const EdgeInsets.all(10),
                 child: Consumer(builder: (context, ref, _) {
                   final categoryList = ref.watch(categoryProvider);
                   return GridView.builder(
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: categoryList.length,
                     shrinkWrap: true,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 10,
-                        crossAxisSpacing: 10,
-                        childAspectRatio: 2),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 10,
+                            childAspectRatio: 2),
                     itemBuilder: (context, index) {
                       String categoryName =
                           categoryList[index].categoryName.displayName;
@@ -202,7 +202,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
               ),
               Container(
                 alignment: Alignment.centerLeft,
-                margin: EdgeInsets.all(10),
+                margin: const EdgeInsets.all(10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -210,18 +210,21 @@ class _HomeViewState extends ConsumerState<HomeView> {
                       "Random Suggestions",
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Consumer(builder: (context, ref, _) {
                       final randomAnimes = ref.watch(randomAnimeProvider);
                       return randomAnimes.when(
                           data: (data) {
                             return ListView.builder(
-                                physics: NeverScrollableScrollPhysics(),
+                                physics: const NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,
                                 itemCount: data.length,
                                 itemBuilder: (context, index) {
                                   final animeName = data[index].title;
+                                  final animeDescription =
+                                      data[index].description;
                                   final posterImage = data[index].posterImage;
+                                  final coverImage = data[index].coverImage;
                                   final rating =
                                       convertAverageRating(data[index].rating);
                                   final type = data[index].subType;
@@ -237,16 +240,30 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
                                   return Column(
                                     children: [
-                                      ListAnimeContainer(
-                                        posterImage: posterImage,
-                                        ratingRank: ratingRank,
-                                        animeName: animeName,
-                                        type: type,
-                                        ageRating: ageRating,
-                                        rating: rating,
-                                        status: status,
-                                        popularityRank: popularityRank,
-                                        favCount: favCount,
+                                      GestureDetector(
+                                        onTap: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return AnimeDescriptionDialog(
+                                                    coverImage: coverImage,
+                                                    posterImage: posterImage,
+                                                    animeName: animeName,
+                                                    animeDescription:
+                                                        animeDescription);
+                                              });
+                                        },
+                                        child: ListAnimeContainer(
+                                          posterImage: posterImage,
+                                          ratingRank: ratingRank,
+                                          animeName: animeName,
+                                          type: type,
+                                          ageRating: ageRating,
+                                          rating: rating,
+                                          status: status,
+                                          popularityRank: popularityRank,
+                                          favCount: favCount,
+                                        ),
                                       ),
                                       if (index == data.length - 1)
                                         GestureDetector(
@@ -257,8 +274,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                                 .showMoreAnime();
                                           },
                                           child: Container(
-                                            margin: EdgeInsets.all(5),
-                                            child: Text("Show more"),
+                                            margin: const EdgeInsets.all(5),
+                                            child: const Text("Show more"),
                                           ),
                                         ),
                                     ],
@@ -267,7 +284,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                           },
                           error: (error, stackTrace) =>
                               Center(child: Text(error.toString())),
-                          loading: () => Center(
+                          loading: () => const Center(
                               child: CircularProgressIndicator.adaptive()));
                     }),
                   ],
@@ -284,9 +301,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 onPressed: () {
                   _scrollToTop();
                 },
-                child: Icon(Icons.arrow_upward_sharp),
+                child: const Icon(Icons.arrow_upward_sharp),
               )
-            : SizedBox();
+            : const SizedBox();
       }),
     );
   }
